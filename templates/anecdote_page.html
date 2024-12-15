@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+        <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+        <big style="float: right;">Рейтинг: {{ anecdote.rating }}</big>
+    </div>
+    <div class="card-body">
+        <h3>{{ anecdote.name }}</h3>
+        <p>{{ anecdote.text|safe }}</p>
+        {% if current_user.is_authenticated %}
+            <div class="container">
+                <div class="col-3">
+                    <div class="btn-group" role="group">
+                        {% include "likes.html" %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<br>
+<ul>
+    {% if current_user.is_authenticated %}
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ url_for('static', filename=current_user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ current_user.name }}</label>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {{ comment_form.hidden_tag() }}
+                    {{ comment_form.text(class='form-control', style="height: 150px;") }}<br>
+                    {{ comment_form.submit(class='btn btn-success') }}
+                </form>
+            </div>
+        </div>
+        <br>
+    {% endif %}
+    {% for comment in comments %}
+        <div class="card">
+            <div class="card-header">
+                <img src="{{ url_for('static', filename=comment.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                <label for="ava" style="font-size:150%">{{ comment.user.name }}</label>
+            </div>
+            <div class="card-body">
+                {{ comment.text|safe }}
+            </div>
+            {% if current_user.is_authenticated and (current_user == comment.user or current_user.is_admin) %}
+                <div class="card-footer">
+                    <form method="get" name="comment-{{ comment.id }}" id="comment{{ comment.id }}">
+                        <input type="hidden" value="{{ comment.id }}" name="comment_id" id="comment_id">
+                        <input type="submit" value="Удалить" class="btn btn-danger">
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        <br>
+    {% endfor %}
+</ul>
+{% endblock %}

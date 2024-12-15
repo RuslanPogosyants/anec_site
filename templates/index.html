@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <ul>
+            {% for anecdote, like_form, dislike_form in anecdotes.values() %}
+                <!-- блок анекдота -->
+                <div class="card" id="{{ anecdote.id }}">
+                    <div class="card-header">
+                        <img src="{{ url_for('static', filename=anecdote.user.picture_path) }}" style="border-radius: 50%" width="40" height="40" id="ava">
+                        <label for="ava" style="font-size:150%">{{ anecdote.user.name }}</label>
+                        <big style="float: right;">Рейтинг: {{ anecdote.rating }}</big>
+                    </div>
+                    <div class="card-body">
+                        <h3>{{ anecdote.name }}</h3>
+                        <p>{{ anecdote.text|safe }}</p>
+                    </div>
+                    <div class="container">
+                        <div class="col-3">
+                            <div class="btn-group" role="group">
+                                {% include "likes.html" %}
+                                <div><a class="btn btn-primary" href="/anecdote/{{ anecdote.id }}">Комментарии</a></div>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+                <br>
+            {% endfor %}
+        </ul>
+    </div>
+    <br>
+    {% include "pagination.html" %}
+</div>
+{% endblock %}
